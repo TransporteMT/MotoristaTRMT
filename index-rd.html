@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD SAÚDE - Plataforma Motorista</title>
+    <style>
+        :root {
+            --color-primary: #2d9966;
+            --color-primary-dark: #1d5d3f;
+            --color-primary-light: #4daa80;
+            --color-secondary: #f0f8f5;
+            --color-text: #1a1a1a;
+            --color-text-light: #666666;
+            --color-border: #d4d4d4;
+            --color-success: #27ae60;
+            --color-warning: #e67e22;
+            --color-error: #c0152f;
+            --color-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-secondary);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: var(--color-bg);
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .version {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .menu-button {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 12px;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .menu-button:hover {
+            background-color: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .menu-button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-primary-light);
+            color: white;
+        }
+
+        .section-title {
+            color: var(--color-primary);
+            font-size: 20px;
+            margin-bottom: 16px;
+            border-bottom: 3px solid var(--color-primary);
+            padding-bottom: 8px;
+        }
+
+        .subsection-title {
+            color: var(--color-primary-dark);
+            font-size: 16px;
+            margin-top: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .step-item {
+            background-color: var(--color-secondary);
+            border-left: 4px solid var(--color-primary);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .step-item:hover {
+            box-shadow: 0 2px 8px rgba(45, 153, 102, 0.15);
+            background-color: #e8f7f3;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+        }
+
+        .step-icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: var(--color-primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .step-content {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(45, 153, 102, 0.2);
+        }
+
+        .step-item.expanded .step-content {
+            display: block;
+        }
+
+        .step-text {
+            color: var(--color-text-light);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background-color: var(--color-secondary);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: var(--color-primary);
+        }
+
+        .checkbox-item.checked {
+            background-color: rgba(45, 153, 102, 0.1);
+            border-color: var(--color-primary);
+        }
+
+        .alert-box {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .alert-info {
+            background-color: rgba(45, 153, 102, 0.1);
+            border-left: 4px solid var(--color-primary);
+            color: var(--color-primary-dark);
+        }
+
+        .alert-warning {
+            background-color: rgba(230, 126, 34, 0.1);
+            border-left: 4px solid var(--color-warning);
+            color: #d35400;
+        }
+
+        .alert-danger {
+            background-color: rgba(192, 21, 47, 0.1);
+            border-left: 4px solid var(--color-error);
+            color: var(--color-error);
+        }
+
+        .contact-card {
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-color: var(--color-primary);
+        }
+
+        .contact-name {
+            color: var(--color-primary);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .contact-role {
+            font-size: 12px;
+            color: var(--color-text-light);
+            margin-bottom: 8px;
+        }
+
+        .contact-phone {
+            display: inline-block;
+            background-color: var(--color-primary);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            text-decoration: none;
+            margin-right: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .contact-phone:hover {
+            background-color: var(--color-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--color-primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        .footer {
+            background-color: var(--color-secondary);
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--color-text-light);
+            border-top: 1px solid var(--color-border);
+            margin-top: 20px;
+        }
+
+        .footer-highlight {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .back-button {
+            margin-bottom: 16px;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s ease;
+            font-size: 18px;
+        }
+
+        .step-item.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                box-shadow: none;
+            }
+
+            header {
+                padding: 16px;
+            }
+
+            .screen {
+                padding: 16px;
+            }
+
+            .menu-button {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🚛 RD SAÚDE</div>
+            <div class="version">Plataforma Motorista v1.0.1</div>
+            <div style="font-size: 12px; margin-top: 4px;">Setor Transporte - Max Mutz</div>
+        </header>
+
+        <!-- HOME SCREEN -->
+        <div id="home" class="screen active">
+            <div class="alert-box alert-danger">
+                <strong>⚠️ ATENÇÃO MOTORISTA!</strong><br>
+                Verifique se está usando o acesso correto antes de iniciar
+            </div>
+
+            <h2 class="section-title">📋 Menu Principal</h2>
+
+            <button class="menu-button" onclick="showScreen('login-check')">
+                🔐 Verificar Login e Acesso
+            </button>
+
+            <button class="menu-button" onclick="showScreen('checklist')">
+                ✅ Como Fazer Checklist
+            </button>
+
+            <button class="menu-button" onclick="showScreen('checkout')">
+                🌙 Como Fazer Checkout
+            </button>
+
+            <button class="menu-button" onclick="showScreen('apps')">
+                📱 Aplicativos Necessários
+            </button>
+
+            <button class="menu-button" onclick="showScreen('contacts')">
+                📞 Dúvidas e Contatos
+            </button>
+        </div>
+
+        <!-- LOGIN CHECK SCREEN -->
+        <div id="login-check" class="screen">
+            <button class="menu-button btn-secondary back-button" onclick="showScreen('home')">
+                ← Voltar
+            </button>
+
+            <h2 class="section-title">🔐 Verificar Login e Acesso</h2>
+
+            <div class="alert-box alert-warning">
+                <strong>⚠️ VERIFICAÇÃO OBRIGATÓRIA</strong><br>
+                Confirme seu acesso ANTES de iniciar qualquer rota!
+            </div>
+
+            <div class="subsection-title">Checklist de Verificação:</div>
+
+            <div class="checkbox-item">
+                <input type="checkbox">
+                <label>✅ Estou logado com meu usuário correto</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox">
+                <label>✅ Verifiquei meu nome na tela inicial</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox">
+                <label>✅ Estou no acesso correto da empresa</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox">
+                <label>✅ Não sigo para rota sem confirmar</label>
+            </div>
+
+            <div class="alert-box alert-info" style="margin-top: 16px;">
+                <strong>Se não tiver certeza:</strong><br>
+                Saia do aplicativo e entre novamente com seu usuário e senha corretos.
+            </div>
+
+            <div class="alert-box alert-danger">
+                <strong>Esqueceu seu acesso?</strong><br>
+                Contate imediatamente a equipe administrativa.
+            </div>
+        </div>
+
+        <!-- CHECKLIST SCREEN -->
+        <div id="checklist" class="screen">
+            <button class="menu-button btn-secondary back-button" onclick="showScreen('home')">
+                ← Voltar
+            </button>
+
+            <h2 class="section-title">✅ Como Fazer Checklist</h2>
+
+            <div class="alert-box alert-info">
+                📋 O checklist é feito <strong>ANTES</strong> de sair com o veículo. Siga os 5 passos abaixo.
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">1</span>
+                        <span>PREPARAÇÃO - Equipamentos Necessários</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Tenha seu smartphone/tablet em mãos<br>
+                        • Certifique-se que o TICKET LOG está instalado<br>
+                        • Verifique se tem conexão com internet<br>
+                        • Localize o código QR/código de barras no veículo<br>
+                        • Carregue a bateria do celular se necessário
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">2</span>
+                        <span>VERIFICAR LOGIN - Confirme seu Acesso</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Abra o aplicativo TICKET LOG<br>
+                        • Confirme que está logado com seu usuário correto<br>
+                        • Verifique seu nome na tela principal<br>
+                        • <strong>NÃO CONTINUE se não tiver certeza</strong><br>
+                        • Saia e entre novamente se necessário
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">3</span>
+                        <span>LER CÓDIGO DE BARRAS - Identifique o Veículo</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • No TICKET LOG, localize o campo de leitura<br>
+                        • Apontar o leitor de código de barras para a placa do veículo<br>
+                        • Ou digite a placa do veículo manualmente<br>
+                        • Aguarde a confirmação no sistema<br>
+                        • O veículo deve aparecer na tela
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">4</span>
+                        <span>PREENCHER CHECKLIST - Siga os Itens</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        <strong>Categorias de Verificação:</strong><br><br>
+                        🔧 <strong>MOTOR E MECÂNICA:</strong><br>
+                        • Óleo do motor<br>
+                        • Água do radiador<br>
+                        • Corrente/correia<br>
+                        • Vazamentos<br><br>
+
+                        🛞 <strong>PNEUS E RODAS:</strong><br>
+                        • Estado dos pneus (calibragem)<br>
+                        • Avaria ou cortes<br>
+                        • Parafusos e porcas<br><br>
+
+                        ⚡ <strong>SISTEMA ELÉTRICO:</strong><br>
+                        • Faróis (alto/baixo)<br>
+                        • Indicadores (direcionais)<br>
+                        • Avisador sonoro<br>
+                        • Vidros e limpadores<br><br>
+
+                        🛡️ <strong>SEGURANÇA:</strong><br>
+                        • Cinto de segurança<br>
+                        • Espelhos ajustados<br>
+                        • Acesso à documentação<br>
+                        • Kit de emergência<br><br>
+
+                        📋 <strong>DOCUMENTAÇÃO:</strong><br>
+                        • RG/CNH válida<br>
+                        • CRLV do veículo<br>
+                        • Seguro em dia<br>
+                        • Outras documentações obrigatórias<br><br>
+
+                        ✍️ <strong>Registre observações se encontrar problemas</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">5</span>
+                        <span>FINALIZAR - Enviar Checklist</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Revise todas as respostas<br>
+                        • Adicione observações se necessário<br>
+                        • Clique em "ENVIAR" ou "FINALIZAR"<br>
+                        • Aguarde a confirmação do sistema<br>
+                        • Anote a hora de saída<br>
+                        • <strong>Agora você está pronto para sair</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-box alert-danger" style="margin-top: 16px;">
+                <strong>⚠️ IMPORTANTE:</strong><br>
+                Nunca saia com o veículo sem completar o checklist! Isso é sua responsabilidade legal e de segurança.
+            </div>
+        </div>
+
+        <!-- CHECKOUT SCREEN -->
+        <div id="checkout" class="screen">
+            <button class="menu-button btn-secondary back-button" onclick="showScreen('home')">
+                ← Voltar
+            </button>
+
+            <h2 class="section-title">🌙 Como Fazer Checkout</h2>
+
+            <div class="alert-box alert-info">
+                🚛 O checkout é feito ao <strong>RETORNAR</strong> à base/garagem. Siga os 5 passos abaixo.
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">1</span>
+                        <span>RETORNO À BASE - Estacione o Veículo</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Retorne à base/garagem de operação<br>
+                        • Estacione o veículo na área designada<br>
+                        • Desligue o motor<br>
+                        • Deixe o veículo seguro<br>
+                        • Saia do veículo com seu celular
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">2</span>
+                        <span>VERIFICAR LOGIN - Confirme seu Acesso</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Abra o aplicativo TICKET LOG<br>
+                        • Reconfirme que está logado com seu usuário<br>
+                        • Verifique seu nome na tela<br>
+                        • Prossiga apenas se confirmar o acesso correto
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">3</span>
+                        <span>LER CÓDIGO DE BARRAS - Leia Novamente</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Localize novamente o código de barras do veículo<br>
+                        • Aponte o leitor para o código<br>
+                        • Ou digite a placa manualmente<br>
+                        • Aguarde a confirmação no sistema<br>
+                        • O veículo deve aparecer pronto para checkout
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">4</span>
+                        <span>REGISTRAR DADOS FINAIS - Complete as Informações</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        <strong>Dados que precisam ser registrados:</strong><br><br>
+
+                        ⏰ <strong>HORÁRIO:</strong><br>
+                        • Hora de retorno (sistema registra automaticamente)<br><br>
+
+                        ⛽ <strong>COMBUSTÍVEL:</strong><br>
+                        • Nível atual do tanque<br>
+                        • Quilometragem atual<br><br>
+
+                        📍 <strong>PROBLEMAS ENCONTRADOS:</strong><br>
+                        • Registre qualquer anormalidade<br>
+                        • Descreva o estado do veículo<br>
+                        • Observe danos (se houver)<br><br>
+
+                        🔍 <strong>ESTADO GERAL:</strong><br>
+                        • Limpeza do veículo<br>
+                        • Equipamentos ainda presentes<br>
+                        • Documentação completa<br><br>
+
+                        ✍️ <strong>Adicione observações importantes</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">5</span>
+                        <span>FINALIZAR CHECKOUT - Confirme a Devolução</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Revise todos os dados registrados<br>
+                        • Confirme as informações finais<br>
+                        • Clique em "FINALIZAR CHECKOUT"<br>
+                        • Aguarde a confirmação do sistema<br>
+                        • Anote a hora de conclusão<br>
+                        • <strong>Sua rota foi encerrada com sucesso</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-box alert-warning" style="margin-top: 16px;">
+                <strong>⚠️ NÃO ESQUEÇA:</strong><br>
+                O checkout confirma a conclusão de sua rota. Todos os dados registrados ficarão no sistema para rastreamento e segurança.
+            </div>
+        </div>
+
+        <!-- APPS SCREEN -->
+        <div id="apps" class="screen">
+            <button class="menu-button btn-secondary back-button" onclick="showScreen('home')">
+                ← Voltar
+            </button>
+
+            <h2 class="section-title">📱 Aplicativos Necessários</h2>
+
+            <div class="alert-box alert-info">
+                Você precisa usar <strong>2 aplicativos principais</strong> em suas operações diárias. Ambos devem estar instalados e atualizados.
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">1️⃣</span>
+                        <span>PERFORMAXI - Início e Fim de Rota</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        <strong>📌 Objetivo:</strong><br>
+                        Registrar o início e fim de cada rota, com informações de placa do veículo e status da jornada.<br><br>
+
+                        <strong>🔧 O que você faz no PERFORMAXI:</strong><br>
+                        • Abre a rota que vai dirigir (visualiza placa)<br>
+                        • Registra saída da base<br>
+                        • Sistema rastreia localização<br>
+                        • Marca retorno à base<br>
+                        • Encerra a rota diária<br><br>
+
+                        <strong>📋 Dados que aparecem:</strong><br>
+                        • Placa do veículo<br>
+                        • Rota atribuída<br>
+                        • Horários de saída e retorno<br>
+                        • Localização GPS<br>
+                        • Status da jornada
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">2️⃣</span>
+                        <span>TICKET LOG - Checklist e Checkout</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        <strong>📌 Objetivo:</strong><br>
+                        Registrar o estado do veículo antes (checklist) e depois (checkout) de cada rota, usando código de barras.<br><br>
+
+                        <strong>🔧 O que você faz no TICKET LOG:</strong><br>
+                        • Faz checklist antes de sair (MANHÃ)<br>
+                        • Aponta leitor para código de barras da placa<br>
+                        • Marca itens de verificação (pneus, motor, etc.)<br>
+                        • Registra problemas encontrados<br>
+                        • Faz checkout ao retornar (TARDE/NOITE)<br>
+                        • Confirma estado final do veículo<br><br>
+
+                        <strong>📋 Dados que você registra:</strong><br>
+                        • Placa do veículo (código de barras)<br>
+                        • Checklist de segurança<br>
+                        • Itens mecânicos e de segurança<br>
+                        • Nível de combustível<br>
+                        • Quilometragem<br>
+                        • Observações importantes<br>
+                        • Horário de retorno
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert-box alert-danger" style="margin-top: 16px;">
+                <strong>⚠️ ATENÇÃO:</strong><br>
+                Ambos os aplicativos são <strong>OBRIGATÓRIOS</strong>. Sem eles, suas rotas não serão registradas corretamente no sistema. Certifique-se de que estão sempre atualizados e funcionando.
+            </div>
+
+            <div class="alert-box alert-warning">
+                <strong>💡 DICA:</strong><br>
+                Se um dos aplicativos travar ou não funcionar, reinicie seu celular e tente novamente. Se persistir, contate o suporte técnico imediatamente.
+            </div>
+        </div>
+
+        <!-- CONTACTS SCREEN -->
+        <div id="contacts" class="screen">
+            <button class="menu-button btn-secondary back-button" onclick="showScreen('home')">
+                ← Voltar
+            </button>
+
+            <h2 class="section-title">📞 Dúvidas e Contatos</h2>
+
+            <div class="alert-box alert-info">
+                Qualquer dúvida sobre os processos? Entre em contato com nossa equipe pelo WhatsApp!
+            </div>
+
+            <div class="subsection-title">👔 ASSISTENTE ADMINISTRATIVO</div>
+
+            <div class="contact-card">
+                <div class="contact-name">MAX MUTZ</div>
+                <div class="contact-role">Assistente Administrativo</div>
+                <a href="https://wa.me/5565998174521?text=Olá%20Max%20tive%20dúvida%20sobre%20checklist" target="_blank" class="contact-phone">
+                    📱 (65) 99817-4521
+                </a>
+                <span class="badge">COMERCIAL</span>
+            </div>
+
+            <div class="subsection-title">🔒 SUPERVISÃO</div>
+
+            <div class="contact-card">
+                <div class="contact-name">THIAGO</div>
+                <div class="contact-role">Supervisor de Transporte</div>
+                <a href="https://wa.me/5511972564660?text=Olá%20Thiago%20tive%20dúvida%20sobre%20transporte" target="_blank" class="contact-phone">
+                    📱 (11) 97256-4660
+                </a>
+                <span class="badge">24/7</span>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-name">GETULIO</div>
+                <div class="contact-role">Supervisor de Transporte</div>
+                <a href="https://wa.me/5565967021032?text=Olá%20Getulio%20tive%20dúvida%20sobre%20transporte" target="_blank" class="contact-phone">
+                    📱 (65) 9672-1032
+                </a>
+                <span class="badge">24/7</span>
+            </div>
+
+            <div class="alert-box alert-warning" style="margin-top: 16px;">
+                <strong>⏰ HORÁRIO DE ATENDIMENTO:</strong><br>
+                <strong>Horário Comercial:</strong> Todos os contatos disponíveis (Max, Thiago, Getulio)<br>
+                <strong>Fora do Expediente:</strong> Apenas supervisão (Thiago e Getulio)<br><br>
+                <em>📝 Assistentes administrativos (como Max) não trabalham fora do horário comercial.</em>
+            </div>
+
+            <div class="alert-box alert-info">
+                <strong>✅ TODOS SÃO WHATSAPP</strong><br>
+                Clique no número para abrir o WhatsApp diretamente ou copie o número para sua agenda.
+            </div>
+
+            <div class="subsection-title">❓ Problemas Comuns?</div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">?</span>
+                        <span>Não consigo ler o código de barras</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Certifique-se que o leitor está conectado<br>
+                        • Limpe a lente do leitor<br>
+                        • Tente aproximar mais do código<br>
+                        • Se não funcionar, digite a placa manualmente<br>
+                        • Contacte o suporte se persistir
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">?</span>
+                        <span>Aplicativo não funciona ou trava</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • Reinicie seu celular<br>
+                        • Feche o aplicativo completamente<br>
+                        • Verifique se tem internet<br>
+                        • Atualize o aplicativo na Play Store<br>
+                        • Se o problema persistir, contacte o suporte
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div style="display: flex; align-items: center;">
+                        <span class="step-icon">?</span>
+                        <span>Esqueci minha senha ou não consigo logar</span>
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="step-content">
+                    <div class="step-text">
+                        • <strong>CONTACTE IMEDIATAMENTE:</strong><br>
+                        • Max Mutz (horário comercial)<br>
+                        • Ou supervisão (Thiago ou Getulio)<br>
+                        • Eles resetarão sua senha<br>
+                        • Não prossiga sem confirmar acesso correto
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div style="margin-bottom: 8px;">
+                <strong>RD SAÚDE - Cuidando da vida com responsabilidade</strong>
+            </div>
+            <div>
+                Desenvolvida <span class="footer-highlight">v1.0.1</span> - <span class="footer-highlight">Setor Transporte</span> - <span class="footer-highlight">Max Mutz</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function toggleStep(stepHeader) {
+            const stepItem = stepHeader.parentElement;
+            stepItem.classList.toggle('expanded');
+            
+            if (stepItem.classList.contains('expanded')) {
+                setTimeout(() => {
+                    stepItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 300);
+            }
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxItems = document.querySelectorAll('.checkbox-item');
+            checkboxItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        if (checkbox.checked) {
+                            this.classList.add('checked');
+                        } else {
+                            this.classList.remove('checked');
+                        }
+                    }
+                });
+            });
+            
+            showScreen('home');
+        });
+    </script>
+</body>
+</html>
